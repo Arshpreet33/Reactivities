@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { useState } from 'react';
 import { SyntheticEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { Button, Item, Label, Segment } from 'semantic-ui-react';
 import { useStore } from '../../../app/stores/store';
 
@@ -36,7 +37,8 @@ function ActivityList() {
 									floated='right'
 									content='View'
 									color='blue'
-									onClick={() => activityStore.selectActivity(activity.id)}
+									as={Link}
+									to={`/activities/${activity.id}`}
 								/>
 								<Button
 									name={activity.id}

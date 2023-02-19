@@ -1,8 +1,10 @@
 import { observer } from 'mobx-react-lite';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Button, Form, Segment } from 'semantic-ui-react';
-import { Activity } from '../../../app/models/activity';
+import LoadingComponent from '../../../app/layout/LoadingComponent';
 import { useStore } from '../../../app/stores/store';
+import { v4 as uuid } from 'uuid';
 
 const INITIAL_STATE = {
 	id: '',
@@ -25,9 +27,22 @@ const enum DISPLAY_NAMES {
 
 function ActivityForm() {
 	const { activityStore } = useStore();
-	const { closeForm, selectedActivity, createOrEditActivity, submitting } =
-		activityStore;
-	const [activity, setActivity] = useState(selectedActivity ?? INITIAL_STATE);
+	const {
+		createActivity,
+		editActivity,
+		submitting,
+		loadActivitybyID,
+		loadingInitial,
+	} = activityStore;
+	const [activity, setActivity] = useState(INITIAL_STATE);
+
+	const { id } = useParams();
+
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		if (id) loadActivitybyID(id).then((a) => setActivity(a!));
+	}, [id, loadActivitybyID]);
 
 	function handleFormInputChange(
 		event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -37,9 +52,17 @@ function ActivityForm() {
 	}
 
 	function handleSubmit() {
-		console.log(activity);
-		createOrEditActivity(activity);
+		if (!activity.id) {
+			activity.id = uuid();
+			createActivity(activity).then(() =>
+				navigate(`/activities/${activity.id}`)
+			);
+		} else
+			editActivity(activity).then(() => navigate(`/activities/${activity.id}`));
 	}
+
+	if (loadingInitial && id)
+		return <LoadingComponent content='Loading Activity data...' />;
 
 	return (
 		<Segment clearing>
@@ -92,7 +115,8 @@ function ActivityForm() {
 					floated='right'
 					type='button'
 					content='Cancel'
-					onClick={closeForm}
+					as={Link}
+					to={activity.id ? `/activities/${activity.id}` : '/activities'}
 				></Button>
 			</Form>
 		</Segment>
