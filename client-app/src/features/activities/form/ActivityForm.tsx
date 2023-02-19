@@ -1,13 +1,8 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import { observer } from 'mobx-react-lite';
+import { ChangeEvent, useState } from 'react';
 import { Button, Form, Segment } from 'semantic-ui-react';
 import { Activity } from '../../../app/models/activity';
-
-interface Props {
-	activity: Activity | undefined;
-	closeForm: () => void;
-	createOrEditActivity: (activity: Activity) => void;
-	submitting: boolean;
-}
+import { useStore } from '../../../app/stores/store';
 
 const INITIAL_STATE = {
 	id: '',
@@ -28,12 +23,10 @@ const enum DISPLAY_NAMES {
 	venue = 'Venue',
 }
 
-export default function ActivityForm({
-	activity: selectedActivity,
-	closeForm,
-	createOrEditActivity,
-	submitting,
-}: Props) {
+function ActivityForm() {
+	const { activityStore } = useStore();
+	const { closeForm, selectedActivity, createOrEditActivity, submitting } =
+		activityStore;
 	const [activity, setActivity] = useState(selectedActivity ?? INITIAL_STATE);
 
 	function handleFormInputChange(
@@ -105,3 +98,5 @@ export default function ActivityForm({
 		</Segment>
 	);
 }
+
+export default observer(ActivityForm);
