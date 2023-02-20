@@ -1,15 +1,23 @@
 import { observer } from 'mobx-react-lite';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Button, Form, Segment } from 'semantic-ui-react';
+import { Button, Header, Segment } from 'semantic-ui-react';
 import LoadingComponent from '../../../app/layout/LoadingComponent';
 import { useStore } from '../../../app/stores/store';
 import { v4 as uuid } from 'uuid';
+import { Formik, Form } from 'formik';
+import * as Yup from 'yup';
+import MyTextInput from '../../../app/common/form/MyTextInput';
+import MyTextArea from '../../../app/common/form/MyTextArea';
+import MySelectInput from '../../../app/common/form/MySelectInput';
+import { categoryOptions } from '../../../app/common/options/categoryOptions';
+import MyDateInput from '../../../app/common/form/MyDateInput';
+import { Activity } from '../../../app/models/activity';
 
 const INITIAL_STATE = {
 	id: '',
 	title: '',
-	date: '',
+	date: null,
 	description: '',
 	category: '',
 	city: '',
@@ -18,12 +26,24 @@ const INITIAL_STATE = {
 
 const enum DISPLAY_NAMES {
 	title = 'Title',
-	date = 'Date',
 	description = 'Description',
 	category = 'Category',
+	date = 'Date',
 	city = 'City',
 	venue = 'Venue',
 }
+
+const enum FIELD_NAMES {
+	title = 'title',
+	description = 'description',
+	category = 'category',
+	date = 'date',
+	city = 'city',
+	venue = 'venue',
+}
+
+const VALIDATION_MESSAGE = (field: string) =>
+	`The activity ${field} is required`;
 
 function ActivityForm() {
 	const { activityStore } = useStore();
@@ -34,24 +54,28 @@ function ActivityForm() {
 		loadActivitybyID,
 		loadingInitial,
 	} = activityStore;
-	const [activity, setActivity] = useState(INITIAL_STATE);
+	const [activity, setActivity] = useState<Activity>(INITIAL_STATE);
 
 	const { id } = useParams();
 
 	const navigate = useNavigate();
 
+	const validationSchema = Yup.object({
+		title: Yup.string().required(VALIDATION_MESSAGE(DISPLAY_NAMES.title)),
+		description: Yup.string().required(
+			VALIDATION_MESSAGE(DISPLAY_NAMES.description)
+		),
+		category: Yup.string().required(VALIDATION_MESSAGE(DISPLAY_NAMES.category)),
+		date: Yup.string().required(VALIDATION_MESSAGE(DISPLAY_NAMES.date)),
+		city: Yup.string().required(VALIDATION_MESSAGE(DISPLAY_NAMES.city)),
+		venue: Yup.string().required(VALIDATION_MESSAGE(DISPLAY_NAMES.venue)),
+	});
+
 	useEffect(() => {
 		if (id) loadActivitybyID(id).then((a) => setActivity(a!));
 	}, [id, loadActivitybyID]);
 
-	function handleFormInputChange(
-		event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-	) {
-		const { name, value } = event.target;
-		setActivity({ ...activity, [name]: value });
-	}
-
-	function handleSubmit() {
+	function handleFormSubmit(activity: Activity) {
 		if (!activity.id) {
 			activity.id = uuid();
 			createActivity(activity).then(() =>
@@ -66,59 +90,63 @@ function ActivityForm() {
 
 	return (
 		<Segment clearing>
-			<Form onSubmit={handleSubmit} autoComplete='off'>
-				<Form.Input
-					placeholder={DISPLAY_NAMES.title}
-					name='title'
-					value={activity.title}
-					onChange={handleFormInputChange}
-				/>
-				<Form.TextArea
-					placeholder={DISPLAY_NAMES.description}
-					name='description'
-					value={activity.description}
-					onChange={handleFormInputChange}
-				/>
-				<Form.Input
-					placeholder={DISPLAY_NAMES.category}
-					name='category'
-					value={activity.category}
-					onChange={handleFormInputChange}
-				/>
-				<Form.Input
-					type='date'
-					placeholder={DISPLAY_NAMES.date}
-					name='date'
-					value={activity.date}
-					onChange={handleFormInputChange}
-				/>
-				<Form.Input
-					placeholder={DISPLAY_NAMES.city}
-					name='city'
-					value={activity.city}
-					onChange={handleFormInputChange}
-				/>
-				<Form.Input
-					placeholder={DISPLAY_NAMES.venue}
-					name='venue'
-					value={activity.venue}
-					onChange={handleFormInputChange}
-				/>
-				<Button
-					loading={submitting}
-					floated='right'
-					positive
-					type='submit'
-					content='Submit'
-				></Button>
-				<Button
-					floated='right'
-					type='button'
-					content='Cancel'
-					as={Link}
-					to={activity.id ? `/activities/${activity.id}` : '/activities'}
-				></Button>
-			</Form>
+			<Header content='Activity Details' sub color='teal' />
+			<Formik
+				validationSchema={validationSchema}
+				enableReinitialize
+				initialValues={activity}
+				onSubmit={(values) => handleFormSubmit(values)}
+			>
+				{({ handleSubmit, isValid, isSubmitting, dirty }) => (
+					<Form className='ui form' onSubmit={handleSubmit} autoComplete='off'>
+						<MyTextInput
+							name={FIELD_NAMES.title}
+							placeholder={DISPLAY_NAMES.title}
+						/>
+						<MyTextArea
+							rows={3}
+							name={FIELD_NAMES.description}
+							placeholder={DISPLAY_NAMES.description}
+						/>
+						<MySelectInput
+							options={categoryOptions}
+							name={FIELD_NAMES.category}
+							placeholder={DISPLAY_NAMES.category}
+						/>
+						<MyDateInput
+							name={FIELD_NAMES.date}
+							placeholderText={DISPLAY_NAMES.date}
+							showTimeSelect
+							timeCaption='time'
+							dateFormat='MMMM d, yyyy h:mm aa'
+						/>
+						<Header content='Location Details' sub color='teal' />
+						<MyTextInput
+							name={FIELD_NAMES.city}
+							placeholder={DISPLAY_NAMES.city}
+						/>
+						<MyTextInput
+							name={FIELD_NAMES.venue}
+							placeholder={DISPLAY_NAMES.venue}
+						/>
+						<Button
+							disabled={isSubmitting || !dirty || !isValid}
+							loading={submitting}
+							floated='right'
+							positive
+							type='submit'
+							content='Submit'
+						></Button>
+						<Button
+							floated='right'
+							type='button'
+							content='Cancel'
+							as={Link}
+							to={activity.id ? `/activities/${activity.id}` : '/activities'}
+						></Button>
+					</Form>
+				)}
+			</Formik>
 		</Segment>
 	);
 }
