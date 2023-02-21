@@ -12,17 +12,7 @@ import MyTextArea from '../../../app/common/form/MyTextArea';
 import MySelectInput from '../../../app/common/form/MySelectInput';
 import { categoryOptions } from '../../../app/common/options/categoryOptions';
 import MyDateInput from '../../../app/common/form/MyDateInput';
-import { Activity } from '../../../app/models/activity';
-
-const INITIAL_STATE = {
-	id: '',
-	title: '',
-	date: null,
-	description: '',
-	category: '',
-	city: '',
-	venue: '',
-};
+import { ActivityFormValues } from '../../../app/models/activity';
 
 const enum DISPLAY_NAMES {
 	title = 'Title',
@@ -47,14 +37,11 @@ const VALIDATION_MESSAGE = (field: string) =>
 
 function ActivityForm() {
 	const { activityStore } = useStore();
-	const {
-		createActivity,
-		editActivity,
-		submitting,
-		loadActivitybyID,
-		loadingInitial,
-	} = activityStore;
-	const [activity, setActivity] = useState<Activity>(INITIAL_STATE);
+	const { createActivity, editActivity, loadActivitybyID, loadingInitial } =
+		activityStore;
+	const [activity, setActivity] = useState<ActivityFormValues>(
+		new ActivityFormValues()
+	);
 
 	const { id } = useParams();
 
@@ -72,10 +59,13 @@ function ActivityForm() {
 	});
 
 	useEffect(() => {
-		if (id) loadActivitybyID(id).then((a) => setActivity(a!));
+		if (id)
+			loadActivitybyID(id).then((activity) =>
+				setActivity(new ActivityFormValues(activity))
+			);
 	}, [id, loadActivitybyID]);
 
-	function handleFormSubmit(activity: Activity) {
+	function handleFormSubmit(activity: ActivityFormValues) {
 		if (!activity.id) {
 			activity.id = uuid();
 			createActivity(activity).then(() =>
@@ -131,7 +121,7 @@ function ActivityForm() {
 						/>
 						<Button
 							disabled={isSubmitting || !dirty || !isValid}
-							loading={submitting}
+							loading={isSubmitting}
 							floated='right'
 							positive
 							type='submit'
