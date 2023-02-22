@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { toast } from 'react-toastify';
 import { Activity, ActivityFormValues } from '../models/activity';
+import { Photo, Profile } from '../models/profile';
 import { User, UserFormValues } from '../models/user';
 import { Router } from '../router/Routes';
 import { store } from '../stores/store';
@@ -57,8 +58,7 @@ const responseBody = <T>(response: AxiosResponse<T>) => response.data;
 
 const requests = {
 	get: <T>(url: string) => axios.get<T>(url).then(responseBody),
-	post: <T>(url: string, body: {}) =>
-		axios.post<T>(url, body).then(responseBody),
+	post: <T>(url: string, body: {}) => axios.post<T>(url, body).then(responseBody),
 	put: <T>(url: string, body: {}) => axios.put<T>(url, body).then(responseBody),
 	del: <T>(url: string) => axios.delete<T>(url).then(responseBody),
 };
@@ -67,27 +67,39 @@ const activityURL = '/activities';
 const Activities = {
 	list: () => requests.get<Activity[]>(activityURL),
 	details: (id: string) => requests.get<Activity>(activityURL + '/' + id),
-	create: (activity: ActivityFormValues) =>
-		requests.post<void>(activityURL, activity),
+	create: (activity: ActivityFormValues) => requests.post<void>(activityURL, activity),
 	edit: (activity: ActivityFormValues) =>
 		requests.put<void>(activityURL + '/' + activity.id, activity),
 	delete: (id: string) => requests.del<void>(activityURL + '/' + id),
-	attend: (id: string) =>
-		requests.post<void>(activityURL + '/' + id + '/attend', {}),
+	attend: (id: string) => requests.post<void>(activityURL + '/' + id + '/attend', {}),
 };
 
 const accountURL = '/account';
 const Account = {
 	current: () => requests.get<User>(accountURL),
-	login: (user: UserFormValues) =>
-		requests.post<User>(accountURL + '/login', user),
-	register: (user: UserFormValues) =>
-		requests.post<User>(accountURL + '/register', user),
+	login: (user: UserFormValues) => requests.post<User>(accountURL + '/login', user),
+	register: (user: UserFormValues) => requests.post<User>(accountURL + '/register', user),
+};
+
+const profilesURL = '/profiles';
+const photosURL = '/photos';
+const Profiles = {
+	get: (username: string) => requests.get<Profile>(profilesURL + '/' + username),
+	uploadPhoto: (file: Blob) => {
+		let formData = new FormData();
+		formData.append('File', file);
+		return axios.post<Photo>('photos', formData, {
+			headers: { 'Content-Type': 'multipart/form-data' },
+		});
+	},
+	setMainPhoto: (id: string) => requests.post(photosURL + '/' + id + '/setmain', {}),
+	deletePhoto: (id: string) => requests.del(photosURL + '/' + id),
 };
 
 const agent = {
 	Activities,
 	Account,
+	Profiles,
 };
 
 export default agent;
