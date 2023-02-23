@@ -25,9 +25,7 @@ export default class ActivityStore {
 		return Object.entries(
 			this.activitiesByDate.reduce((activities, activity) => {
 				const date = format(activity.date!, 'dd MMM yyyy');
-				activities[date] = activities[date]
-					? [...activities[date], activity]
-					: [activity];
+				activities[date] = activities[date] ? [...activities[date], activity] : [activity];
 				return activities;
 			}, {} as { [key: string]: Activity[] })
 		);
@@ -60,13 +58,9 @@ export default class ActivityStore {
 	private setActivity = (activity: Activity) => {
 		const user = store.userStore.user;
 		if (user) {
-			activity.isGoing = activity.attendees!.some(
-				(a) => a.username === user.userName
-			);
+			activity.isGoing = activity.attendees!.some((a) => a.username === user.userName);
 			activity.isHost = activity.hostUsername === user.userName;
-			activity.host = activity.attendees?.find(
-				(a) => a.username === activity.hostUsername
-			);
+			activity.host = activity.attendees?.find((a) => a.username === activity.hostUsername);
 		}
 
 		activity.date = new Date(activity.date!);
@@ -154,10 +148,9 @@ export default class ActivityStore {
 			await agent.Activities.attend(this.selectedActivity!.id);
 			runInAction(() => {
 				if (this.selectedActivity?.isGoing) {
-					this.selectedActivity.attendees =
-						this.selectedActivity.attendees?.filter(
-							(a) => a.username !== user?.userName
-						);
+					this.selectedActivity.attendees = this.selectedActivity.attendees?.filter(
+						(a) => a.username !== user?.userName
+					);
 					this.selectedActivity!.isGoing = false;
 				} else {
 					const attendee = new Profile(user!);
@@ -165,10 +158,7 @@ export default class ActivityStore {
 					this.selectedActivity!.isGoing = true;
 				}
 
-				this.activityRegistry.set(
-					this.selectedActivity!.id,
-					this.selectedActivity!
-				);
+				this.activityRegistry.set(this.selectedActivity!.id, this.selectedActivity!);
 			});
 		} catch (error) {
 			console.log(error);
@@ -183,13 +173,9 @@ export default class ActivityStore {
 			await agent.Activities.attend(this.selectedActivity!.id);
 
 			runInAction(() => {
-				this.selectedActivity!.isCancelled =
-					!this.selectedActivity?.isCancelled;
+				this.selectedActivity!.isCancelled = !this.selectedActivity?.isCancelled;
 
-				this.activityRegistry.set(
-					this.selectedActivity!.id,
-					this.selectedActivity!
-				);
+				this.activityRegistry.set(this.selectedActivity!.id, this.selectedActivity!);
 			});
 		} catch (error) {
 			console.log(error);

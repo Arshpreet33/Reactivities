@@ -85,6 +85,7 @@ const profilesURL = '/profiles';
 const photosURL = '/photos';
 const Profiles = {
 	get: (username: string) => requests.get<Profile>(profilesURL + '/' + username),
+	edit: (profile: Partial<Profile>) => requests.put(profilesURL, profile),
 	uploadPhoto: (file: Blob) => {
 		let formData = new FormData();
 		formData.append('File', file);
