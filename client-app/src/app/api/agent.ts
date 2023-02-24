@@ -1,7 +1,8 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { toast } from 'react-toastify';
 import { Activity, ActivityFormValues } from '../models/activity';
-import { Photo, Profile } from '../models/profile';
+import { PaginatedResults } from '../models/pagination';
+import { Photo, Profile, UserActivity } from '../models/profile';
 import { User, UserFormValues } from '../models/user';
 import { Router } from '../router/Routes';
 import { store } from '../stores/store';
@@ -16,7 +17,14 @@ axios.interceptors.request.use((config) => {
 });
 
 axios.interceptors.response.use(
-	async (response) => response,
+	async (response) => {
+		const pagination = response.headers['pagination'];
+		if (pagination) {
+			response.data = new PaginatedResults(response.data, JSON.parse(pagination));
+			return response as AxiosResponse<PaginatedResults<any>>;
+		}
+		return response;
+	},
 	(error: AxiosError) => {
 		const { data, status, config } = error.response as AxiosResponse;
 
@@ -65,7 +73,8 @@ const requests = {
 
 const activityURL = '/activities';
 const Activities = {
-	list: () => requests.get<Activity[]>(activityURL),
+	list: (params: URLSearchParams) =>
+		axios.get<PaginatedResults<Activity[]>>(activityURL, { params }).then(responseBody),
 	details: (id: string) => requests.get<Activity>(activityURL + '/' + id),
 	create: (activity: ActivityFormValues) => requests.post<void>(activityURL, activity),
 	edit: (activity: ActivityFormValues) =>
@@ -99,6 +108,10 @@ const Profiles = {
 	updateFollowing: (username: string) => requests.post(followURL + '/' + username, {}),
 	listFollowings: (username: string, predicate: string) =>
 		requests.get<Profile[]>(followURL + '/' + username + '?predicate=' + predicate),
+	listActivities: (username: string, predicate: string) =>
+		requests.get<UserActivity[]>(
+			profilesURL + '/' + username + '/activities?predicate=' + predicate
+		),
 };
 
 const agent = {
