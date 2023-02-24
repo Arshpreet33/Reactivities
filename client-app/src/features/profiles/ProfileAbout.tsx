@@ -45,7 +45,7 @@ function ProfileAbout({ profile }: Props) {
 						/>
 					) : (
 						<Grid.Row>
-							<Header floated='left' content={profile.bio} style={{ 'white-space': 'pre-line' }} />
+							<Header floated='left' content={profile.bio} style={{ whiteSpace: 'pre-line' }} />
 						</Grid.Row>
 					)}
 				</Grid.Column>

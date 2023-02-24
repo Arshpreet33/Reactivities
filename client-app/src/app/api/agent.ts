@@ -83,6 +83,7 @@ const Account = {
 
 const profilesURL = '/profiles';
 const photosURL = '/photos';
+const followURL = '/follow';
 const Profiles = {
 	get: (username: string) => requests.get<Profile>(profilesURL + '/' + username),
 	edit: (profile: Partial<Profile>) => requests.put(profilesURL, profile),
@@ -95,6 +96,9 @@ const Profiles = {
 	},
 	setMainPhoto: (id: string) => requests.post(photosURL + '/' + id + '/setmain', {}),
 	deletePhoto: (id: string) => requests.del(photosURL + '/' + id),
+	updateFollowing: (username: string) => requests.post(followURL + '/' + username, {}),
+	listFollowings: (username: string, predicate: string) =>
+		requests.get<Profile[]>(followURL + '/' + username + '?predicate=' + predicate),
 };
 
 const agent = {
