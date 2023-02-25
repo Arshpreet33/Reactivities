@@ -10,6 +10,8 @@ import { store } from '../stores/store';
 // const sleep = (delay: number) =>
 // 	new Promise((resolve) => setTimeout(resolve, delay));
 
+axios.defaults.baseURL = process.env.REACT_APP_API_URL;
+
 axios.interceptors.request.use((config) => {
 	const token = store.commonStore.token;
 	if (token && config.headers) config.headers.Authorization = `Bearer ${token}`;
@@ -59,8 +61,6 @@ axios.interceptors.response.use(
 		return Promise.reject(error);
 	}
 );
-
-axios.defaults.baseURL = 'http://localhost:5000/api';
 
 const responseBody = <T>(response: AxiosResponse<T>) => response.data;
 
