@@ -21,4 +21,4 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: trycatchlearn/reactivities:latest
+          tags: arshpreet33/reactivities:latest
