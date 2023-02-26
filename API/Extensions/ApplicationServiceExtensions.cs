@@ -63,11 +63,10 @@ namespace API.Extensions
         opt.AddPolicy("CorsPolicy", policy =>
           {
             policy
-              .AllowAnyOrigin()
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
-            // .WithOrigins("http://localhost:3000");
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials()
+                .WithOrigins("http://localhost:3000", "https://fun-activities.fly.dev");
           });
       });
       services.AddMediatR(typeof(List.Handler));
