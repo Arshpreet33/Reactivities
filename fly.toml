@@ -1,4 +1,4 @@
-# fly.toml file generated for fun-activities on 2023-02-24T22:08:17-07:00
+# fly.toml file generated for fun-activities on 2023-02-25T17:07:37-07:00
 
 app = "fun-activities"
 kill_signal = "SIGINT"
@@ -9,9 +9,9 @@ processes = []
   image = "arshpreet33/reactivities:latest"
 
 [env]
-  ASPNETCORE_URLS="http://+:8080"
-  Cloudinary__CloudName="dhyrsdk4l"
-  Cloudinary__ApiKey="216376142828864"
+  ASPNETCORE_URLS = "http://+:8080"
+  Cloudinary__ApiKey = "216376142828864"
+  Cloudinary__CloudName = "dhyrsdk4l"
 
 [experimental]
   auto_rollback = true
