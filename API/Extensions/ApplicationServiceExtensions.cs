@@ -38,7 +38,7 @@ namespace API.Extensions
           // Use connection string provided at runtime by FlyIO.
           var connUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 
-        DATABASE_URL: postgres://fun_activities:PI3QSBQsEVy6JB5@[fdaa:1:74f6:0:1::3]:5432/fun_activities?sslmode=disable
+          // DATABASE_URL: postgres://fun_activities:PI3QSBQsEVy6JB5@[fdaa:1:74f6:0:1::3]:5432/fun_activities?sslmode=disable
 
           // Parse connection URL to connection string for Npgsql
           connUrl = connUrl.Replace("postgres://", string.Empty);
