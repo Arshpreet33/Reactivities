@@ -55,6 +55,8 @@ namespace API.Extensions
           var pgPort = pgHostPort.Substring(pgHostPort.LastIndexOf(":") + 1);
           var pgHost = pgHostPort.Substring(0, pgHostPort.LastIndexOf(":")).Replace("[", string.Empty).Replace("]", string.Empty);
 
+          if (pgDb.Contains("?")) pgDb = pgDb.Substring(0, pgDb.IndexOf("?"));
+
           connStr = $"Server={pgHost};Port={pgPort};User Id={pgUser};Password={pgPass};Database={pgDb};";
         }
 

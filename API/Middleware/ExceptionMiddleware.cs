@@ -32,6 +32,8 @@ namespace API.Middleware
       var pgPort = pgHostPort.Substring(pgHostPort.LastIndexOf(":") + 1);
       var pgHost = pgHostPort.Substring(0, pgHostPort.LastIndexOf(":")).Replace("[", string.Empty).Replace("]", string.Empty);
 
+      if (pgDb.Contains("?")) pgDb = pgDb.Substring(0, pgDb.IndexOf("?"));
+
       _logger.LogInformation("DATABASE_URL: " + Environment.GetEnvironmentVariable("DATABASE_URL"));
       _logger.LogInformation("connStr: " + $"Server={pgHost};Port={pgPort};User Id={pgUser};Password={pgPass};Database={pgDb};");
 
