@@ -34,8 +34,10 @@ namespace API.Middleware
 
       if (pgDb.Contains("?")) pgDb = pgDb.Substring(0, pgDb.IndexOf("?"));
 
+      string connStr = $"Server={pgHost};Port={pgPort};User Id={pgUser};Password={pgPass};Database={pgDb};";
+
       _logger.LogInformation("DATABASE_URL: " + Environment.GetEnvironmentVariable("DATABASE_URL"));
-      _logger.LogInformation("connStr: " + $"Server={pgHost};Port={pgPort};User Id={pgUser};Password={pgPass};Database={pgDb};");
+      _logger.LogInformation("***connStr***: " + connStr);
 
       try
       {
