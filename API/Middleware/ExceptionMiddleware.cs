@@ -29,7 +29,7 @@ namespace API.Middleware
       var pgUser = pgUserPass.Split(":")[0];
       var pgPass = pgUserPass.Split(":")[1];
 
-      var pgPort = pgHostPort.Substring(pgHostPort.LastIndexOf(":"));
+      var pgPort = pgHostPort.Substring(pgHostPort.LastIndexOf(":") + 1);
       var pgHost = pgHostPort.Substring(0, pgHostPort.LastIndexOf(":")).Replace("[", string.Empty).Replace("]", string.Empty);
 
       _logger.LogInformation("DATABASE_URL: " + Environment.GetEnvironmentVariable("DATABASE_URL"));

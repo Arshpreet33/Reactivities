@@ -52,7 +52,7 @@ namespace API.Extensions
           // var pgHostPortsplit = pgHostPort.Split(":");
           // var pgPort = pgHostPortsplit[pgHostPortsplit.Length - 1];
 
-          var pgPort = pgHostPort.Substring(pgHostPort.LastIndexOf(":"));
+          var pgPort = pgHostPort.Substring(pgHostPort.LastIndexOf(":") + 1);
           var pgHost = pgHostPort.Substring(0, pgHostPort.LastIndexOf(":")).Replace("[", string.Empty).Replace("]", string.Empty);
 
           connStr = $"Server={pgHost};Port={pgPort};User Id={pgUser};Password={pgPass};Database={pgDb};";
