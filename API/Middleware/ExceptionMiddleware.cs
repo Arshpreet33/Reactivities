@@ -19,6 +19,7 @@ namespace API.Middleware
 
     public async Task InvokeAsync(HttpContext context)
     {
+      _logger.LogInformation("DATABASE_URL: " + Environment.GetEnvironmentVariable("DATABASE_URL"));
       try
       {
         await _next(context);
