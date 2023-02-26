@@ -38,6 +38,8 @@ namespace API.Extensions
           // Use connection string provided at runtime by FlyIO.
           var connUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 
+        DATABASE_URL: postgres://fun_activities:PI3QSBQsEVy6JB5@[fdaa:1:74f6:0:1::3]:5432/fun_activities?sslmode=disable
+
           // Parse connection URL to connection string for Npgsql
           connUrl = connUrl.Replace("postgres://", string.Empty);
           var pgUserPass = connUrl.Split("@")[0];
@@ -46,8 +48,12 @@ namespace API.Extensions
           var pgDb = pgHostPortDb.Split("/")[1];
           var pgUser = pgUserPass.Split(":")[0];
           var pgPass = pgUserPass.Split(":")[1];
-          var pgHost = pgHostPort.Split(":")[0];
-          var pgPort = pgHostPort.Split(":")[1];
+
+          // var pgHostPortsplit = pgHostPort.Split(":");
+          // var pgPort = pgHostPortsplit[pgHostPortsplit.Length - 1];
+
+          var pgPort = pgHostPort.Substring(pgHostPort.LastIndexOf(":"));
+          var pgHost = pgHostPort.Substring(0, pgHostPort.LastIndexOf(":")).Replace("[", string.Empty).Replace("]", string.Empty);
 
           connStr = $"Server={pgHost};Port={pgPort};User Id={pgUser};Password={pgPass};Database={pgDb};";
         }
