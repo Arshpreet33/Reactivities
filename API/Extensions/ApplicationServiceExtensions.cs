@@ -49,6 +49,11 @@ namespace API.Extensions
           var pgHost = pgHostPort.Split(":")[0];
           var pgPort = pgHostPort.Split(":")[1];
 
+          if (pgDb.Contains('?'))
+          {
+            pgDb = pgDb.Split("?")[0];
+          }
+
           connStr = $"Server={pgHost};Port={pgPort};User Id={pgUser};Password={pgPass};Database={pgDb};";
         }
 
